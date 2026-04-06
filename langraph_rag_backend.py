@@ -12,7 +12,8 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.vectorstores import FAISS
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_groq import ChatGroq
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
@@ -24,8 +25,15 @@ load_dotenv()
 # -------------------
 # 1. LLM + embeddings
 # -------------------
-llm = ChatOpenAI(model="gpt-4o-mini")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+groq_api = os.getenv('groq_api')
+llm = ChatGroq(
+    model='llama-3.3-70b-versatile',
+    api_key=groq_api,
+    temperature = 0
+)
+embeddings = HuggingFaceBgeEmbeddings(
+        model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+)
 
 # -------------------
 # 2. PDF retriever store (per thread)
